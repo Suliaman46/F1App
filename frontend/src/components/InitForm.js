@@ -9,6 +9,7 @@ import {
 } from "react-bootstrap";
 import { Form as FinalForm, Field as FinalField } from "react-final-form";
 import Form from "react-bootstrap/Form";
+
 import BootSelect from "./helper/BootstrapSelect";
 import flaskF1 from "../apis/flaskF1";
 const sessions = ["FP1", "FP2", "FP3", "Qualifying", "Race"];
@@ -16,11 +17,8 @@ const sessions = ["FP1", "FP2", "FP3", "Qualifying", "Race"];
 const InitForm = (props) => {
   const [eventList, setEventList] = useState([]);
   const [eventSelected, setEventSelected] = useState("");
-
   const [sessionSelected, setSessionSelected] = useState("FP1");
-
   const [driverList, setDriverList] = useState([]);
-  const [driverSelected, setDriverSelected] = useState("");
 
   useEffect(() => {
     const fetchEventList = async () => {
@@ -64,14 +62,10 @@ const InitForm = (props) => {
   const renderDrivers = driverList.map((driver) => {
     return <option key={driver}>{driver}</option>;
   });
-  const onSubmit = async () => {
+  const onSubmit = async (values) => {
+    props.spinnerHandler();
     const response = await flaskF1.get("/fastestSTGraph", {
-      params: {
-        event: eventSelected,
-        year: 2022,
-        session: sessionSelected,
-        driver: driverSelected,
-      },
+      params: values,
     });
     props.submitHandler(response.data);
   };
@@ -132,12 +126,18 @@ const InitForm = (props) => {
                   <FinalField
                     name="driver"
                     component={BootSelect}
-                    options={renderDrivers}
+                    options={
+                      driverList.length > 0 ? (
+                        renderDrivers
+                      ) : (
+                        <option>Loading...</option>
+                      )
+                    }
                     initialValue={driverList[0]}
-                    disabled={false}
-                    inputOnChange={(e) => {
-                      setDriverSelected(e.target.value);
-                    }}
+                    disabled={driverList.length > 0 ? false : true}
+                    // inputOnChange={(e) => {
+                    //   setDriverSelected(e.target.value);
+                    // }}
                   />
                 </FormGroup>
               </Col>
