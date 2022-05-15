@@ -35,7 +35,9 @@ def get_drivers():
     return {'drivers': driverList}
 @app.route('/fastestSTGraph',methods=['GET'])
 def get_fastest_st_graph():
-    driverName = request.args.get('driver')
+    driverName1 = request.args.get('driver1')
+    driverName2 = request.args.get('driver2')
+
     event = request.args.get('event')
     year = request.args.get('year')
     sess = request.args.get('session')
@@ -43,13 +45,21 @@ def get_fastest_st_graph():
     session = fastf1.get_event(int(year),gp=event).get_session(sess)
     session.load()
 
-    driver = session.laps.pick_driver(driverName)
-    fastestLap = driver.pick_fastest()
-    carData = fastestLap.get_car_data()
-    speed =carData['Speed']
-    time = carData['Time']
-    timeSec = time.dt.total_seconds()
+    driver1 = session.laps.pick_driver(driverName1)
+    fastestLap1 = driver1.pick_fastest()
+    carData1 = fastestLap1.get_car_data()
+    speed1 =carData1['Speed']
+    time1 = carData1['Time']
+    timeSec1 = time1.dt.total_seconds()
 
-    return {'time':timeSec.to_json(orient='values', double_precision=3), 'speed': speed.to_json(orient='values')}
+    driver2 = session.laps.pick_driver(driverName2)
+    fastestLap2 = driver2.pick_fastest()
+    carData2 = fastestLap2.get_car_data()
+    speed2 = carData2['Speed']
+    time2 = carData2['Time']
+    timeSec2 = time2.dt.total_seconds()
+
+    return {driverName1: {'time':timeSec1.to_json(orient='values', double_precision=3), 'speed': speed1.to_json(orient='values')},
+            driverName2: {'time':timeSec2.to_json(orient='values', double_precision=3), 'speed': speed2.to_json(orient='values')}  }
 if __name__ == '__main__':
     app.run()

@@ -63,6 +63,7 @@ const InitForm = (props) => {
     return <option key={driver}>{driver}</option>;
   });
   const onSubmit = async (values) => {
+    console.log(values);
     props.spinnerHandler();
     const response = await flaskF1.get("/fastestSTGraph", {
       params: values,
@@ -122,9 +123,9 @@ const InitForm = (props) => {
               </Col>
               <Col>
                 <FormGroup>
-                  <FormLabel className="fw-bold fs-5"> Driver </FormLabel>
+                  <FormLabel className="fw-bold fs-5"> Driver 1</FormLabel>
                   <FinalField
-                    name="driver"
+                    name="driver1"
                     component={BootSelect}
                     options={
                       driverList.length > 0 ? (
@@ -135,13 +136,29 @@ const InitForm = (props) => {
                     }
                     initialValue={driverList[0]}
                     disabled={driverList.length > 0 ? false : true}
-                    // inputOnChange={(e) => {
-                    //   setDriverSelected(e.target.value);
-                    // }}
+                  />
+                </FormGroup>
+              </Col>
+              <Col>
+                <FormGroup>
+                  <FormLabel className="fw-bold fs-5"> Driver 2</FormLabel>
+                  <FinalField
+                    name="driver2"
+                    component={BootSelect}
+                    options={
+                      driverList.length > 0 ? (
+                        renderDrivers
+                      ) : (
+                        <option>Loading...</option>
+                      )
+                    }
+                    initialValue={driverList[1]}
+                    disabled={driverList.length > 0 ? false : true}
                   />
                 </FormGroup>
               </Col>
             </Row>
+
             <FormGroup style={{ paddingTop: "10px" }}>
               <Row>
                 <Col>

@@ -4,15 +4,22 @@ import InitForm from "./InitForm";
 import Graph from "./Graph";
 const App = () => {
   console.log("rerenderd");
-
   const [imgData, setImgData] = useState(null);
   const [showSpinner, setShowSpinner] = useState(false);
+  console.log(imgData);
 
-  const submitHandler = (img) => {
+  const submitHandler = (data) => {
     setShowSpinner(false);
+    const keys = Object.keys(data);
     setImgData({
-      time: JSON.parse(img.time),
-      speed: JSON.parse(img.speed),
+      [keys[0]]: {
+        time: JSON.parse(data[keys[0]].time),
+        speed: JSON.parse(data[keys[0]].speed),
+      },
+      [keys[1]]: {
+        time: JSON.parse(data[keys[1]].time),
+        speed: JSON.parse(data[keys[1]].speed),
+      },
     });
   };
 

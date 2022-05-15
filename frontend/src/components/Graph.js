@@ -2,7 +2,12 @@ import React from "react";
 import { Container } from "react-bootstrap";
 import Plot from "react-plotly.js";
 
-const Graph = (props) => {
+const Graph = ({ img }) => {
+  console.log(img);
+  let keys = null;
+  if (img) {
+    keys = Object.keys(img);
+  }
   return (
     <Container>
       <div
@@ -12,14 +17,22 @@ const Graph = (props) => {
           justifyContent: "center",
         }}
       >
-        {props.img && (
+        {img && keys && (
           <Plot
             data={[
               {
-                x: props.img.time,
-                y: props.img.speed,
+                x: img[keys[0]].time,
+                y: img[keys[0]].speed,
+                name: keys[0],
                 type: "scatter",
-                xlabel: "speed",
+                mode: "lines",
+              },
+              {
+                x: img[keys[1]].time,
+                y: img[keys[1]].speed,
+                name: keys[1],
+                type: "scatter",
+                mode: "lines",
               },
             ]}
             layout={{
