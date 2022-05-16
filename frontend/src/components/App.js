@@ -13,12 +13,20 @@ const App = () => {
     const keys = Object.keys(data);
     setImgData({
       [keys[0]]: {
-        time: JSON.parse(data[keys[0]].time),
+        // time: JSON.parse(data[keys[0]].time),
         speed: JSON.parse(data[keys[0]].speed),
+        distance: JSON.parse(data[keys[0]].distance),
+        rpm: JSON.parse(data[keys[0]].rpm),
+        thorttle: JSON.parse(data[keys[0]].throttle),
+        brake: JSON.parse(data[keys[0]].brake),
       },
       [keys[1]]: {
-        time: JSON.parse(data[keys[1]].time),
+        // time: JSON.parse(data[keys[1]].time),
         speed: JSON.parse(data[keys[1]].speed),
+        distance: JSON.parse(data[keys[1]].distance),
+        rpm: JSON.parse(data[keys[1]].rpm),
+        thorttle: JSON.parse(data[keys[1]].throttle),
+        brake: JSON.parse(data[keys[1]].brake),
       },
     });
   };
@@ -45,7 +53,16 @@ const App = () => {
         submitHandler={submitHandler}
         spinnerHandler={showSpinnerHandler}
       />
-      {showSpinner ? spin : <Graph img={imgData} />}
+      {showSpinner ? (
+        spin
+      ) : (
+        <Container>
+          <Graph img={imgData} xaxis={"distance"} yaxis={"speed"} />
+          <Graph img={imgData} xaxis={"distance"} yaxis={"rpm"} />
+          <Graph img={imgData} xaxis={"distance"} yaxis={"thorttle"} />
+          <Graph img={imgData} xaxis={"distance"} yaxis={"brake"} />
+        </Container>
+      )}
     </Container>
   );
 };

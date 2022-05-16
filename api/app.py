@@ -33,6 +33,45 @@ def get_drivers():
     session.load()
     driverList = pd.unique(session.laps['Driver']).tolist()
     return {'drivers': driverList}
+
+def get_fastest_lap_data(session,driverName, distance=False):
+    driver = session.laps.pick_driver(driverName)
+    fastestLap = driver.pick_fastest()
+    return fastestLap.get_car_data().add_distance() if distance else fastestLap.get_car_data()
+
+def get_fastest_lap_speed_data(session, driverName ):
+
+    carData =get_fastest_lap_data(session,driverName)
+    speed =carData['Speed']
+    return speed.to_json(orient='values')
+
+def get_fastest_lap_time_data(session, driverName):
+
+    carData =get_fastest_lap_data(session,driverName)
+    time = carData['Time']
+    timeSec = time.dt.total_seconds()
+    return timeSec.to_json(orient='values',double_precision=3)
+
+def get_fastest_lap_rpm_data(session, driverName):
+    carData = get_fastest_lap_data(session,  driverName)
+    rpm = carData['RPM']
+    return rpm.to_json(orient='values')
+
+def get_fastest_lap_brake_data(session, driverName):
+    carData = get_fastest_lap_data(session, driverName)
+    brake = carData['Brake']
+    return brake.to_json(orient='values')
+
+def get_fastest_lap_throttle_data(session, driverName):
+    carData = get_fastest_lap_data(session, driverName)
+    throttle = carData['Throttle']
+    return throttle.to_json(orient='values')
+
+def get_fastest_lap_distance_data(session,driverName):
+    carData = get_fastest_lap_data(session,driverName,distance=True)
+    distance= carData['Distance']
+    return distance.to_json(orient='values')
+
 @app.route('/fastestSTGraph',methods=['GET'])
 def get_fastest_st_graph():
     driverName1 = request.args.get('driver1')
@@ -45,21 +84,58 @@ def get_fastest_st_graph():
     session = fastf1.get_event(int(year),gp=event).get_session(sess)
     session.load()
 
-    driver1 = session.laps.pick_driver(driverName1)
-    fastestLap1 = driver1.pick_fastest()
-    carData1 = fastestLap1.get_car_data()
-    speed1 =carData1['Speed']
-    time1 = carData1['Time']
-    timeSec1 = time1.dt.total_seconds()
+    driver1Data = {'time': get_fastest_lap_time_data(session,driverName1),'speed':get_fastest_lap_speed_data(session,driverName1)}
+    driver2Data = {'time': get_fastest_lap_time_data(session,driverName2),'speed':get_fastest_lap_speed_data(session,driverName2)}
 
-    driver2 = session.laps.pick_driver(driverName2)
-    fastestLap2 = driver2.pick_fastest()
-    carData2 = fastestLap2.get_car_data()
-    speed2 = carData2['Speed']
-    time2 = carData2['Time']
-    timeSec2 = time2.dt.total_seconds()
+    return {driverName1: driver1Data, driverName2: driver2Data}
 
-    return {driverName1: {'time':timeSec1.to_json(orient='values', double_precision=3), 'speed': speed1.to_json(orient='values')},
-            driverName2: {'time':timeSec2.to_json(orient='values', double_precision=3), 'speed': speed2.to_json(orient='values')}  }
+
+@app.route('/getTelemetry', methods=['GET'])
+def get_all_telemetry():
+    driverName1 = request.args.get('driver1')
+    driverName2 = request.args.get('driver2')
+
+    event = request.args.get('event')
+    year = request.args.get('year')
+    sess = request.args.get('session')
+
+    session = fastf1.get_event(int(year),gp=event).get_session(sess)
+    session.load()
+
+    speed1=get_fastest_lap_speed_data(session,driverName1)
+    speed2=get_fastest_lap_speed_data(session,driverName2)
+
+    rpm1 = get_fastest_lap_rpm_data(session,driverName1)
+    rpm2 = get_fastest_lap_rpm_data(session,driverName2)
+
+    throttle1 = get_fastest_lap_throttle_data(session,driverName1)
+    throttle2 = get_fastest_lap_throttle_data(session,driverName2)
+
+    brake1= get_fastest_lap_brake_data(session,driverName1)
+    brake2= get_fastest_lap_brake_data(session,driverName2)
+
+    distance1=get_fastest_lap_distance_data(session, driverName1)
+    distance2=get_fastest_lap_distance_data(session, driverName2)
+
+    driver1Data = {'distance': distance1,
+                   'speed': speed1,
+                   'rpm': rpm1,
+                   'throttle': throttle1,
+                   'brake':brake1
+                   }
+    driver2Data = {'distance': distance2,
+                   'speed': speed2,
+                   'rpm': rpm2,
+                   'throttle': throttle2,
+                   'brake':brake2
+                   }
+
+    return {driverName1: driver1Data, driverName2: driver2Data}
+
+
+
+
+
+
 if __name__ == '__main__':
     app.run()

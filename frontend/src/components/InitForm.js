@@ -65,9 +65,13 @@ const InitForm = (props) => {
   const onSubmit = async (values) => {
     console.log(values);
     props.spinnerHandler();
-    const response = await flaskF1.get("/fastestSTGraph", {
+    // const response = await flaskF1.get("/fastestSTGraph", {
+    //   params: values,
+    // });
+    const response = await flaskF1.get("/getTelemetry", {
       params: values,
     });
+    console.log(response.data);
     props.submitHandler(response.data);
   };
   let formData = {};
@@ -163,7 +167,7 @@ const InitForm = (props) => {
               <Row>
                 <Col>
                   <Button variant="primary" type="submit" size="lg">
-                    Get Fastest Lap Telemetry
+                    Compare Telemetry
                   </Button>
                 </Col>
               </Row>
